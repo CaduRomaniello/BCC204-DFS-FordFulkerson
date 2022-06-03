@@ -1,0 +1,37 @@
+DFS
+
+Observações:
+    - na classe Aresta, existem dois atributos que vc tem q prestar atencao q sao o atributo origem e o atributo destino. Eles são preenchidos de acordo com a leitura do input, porém caso o grafo for não direcionado as duas extremidades da aresta são tanto origem quanto destino sendo necessário fazer essa verificação quando for fazer uma operação que dependa desses atributos como vc pode ver na linha 135 do arquivo DFS.CPP
+    - na classe grafo o professor pode te questionar pq vc usou vetores para armazenar os vertices e as arestas do grafo como fez comigo quando eu fiz a cadeira. Eu respondi pra ele que eu tinha entendido do enunciado que a lista de adjacência era apenas para o vértice e ele n me tirou ponto
+    - na classe vértice, a lista de adjacência armazena o id da Aresta que alcança o próximo vértice. Caso ele pergunte pq vc colocou só esse id e não o id do vértice por exemplo vc pode falar que foi pq vc achou q seria melhor vc ter a aresta que faz a ligação entre os vértices pra que quando fosse fazer operações sobre a aresta (como nas linhas 146 e 150 do arquivo DFS.cpp) seria mais fácil ter esse índice pq vc poderia ter acesso a todos os atributos da aresta fazendo um acesso indexado e não um loop até encontrar a aresta correspondente. Isso foi possível de ser feito porque os dados de entrada estão ordenados em ordem crescente de índice que juntamente com a leitura dos dados permite q essa lista de adjacência esteja ordenada em ordme crescente de índice também
+    - todos os acessos indexados ao vetores da classe Grafo possuem o -1 pois os id dos objetos vão de 1 até n e os index do vetor vão de 0 até n-1
+
+O código do DFS funciona da seguinte maneira:
+    - ele recebe um inteiro q indica o vertice q esta sendo utilizado nessa chamada da funcao (idVerticeAtual) DFS e uma lista para poder armazenar os vertices na ordem que eles estao sendo visitados
+    - o vertice atual é marcado como visitado e seu indice eh inserido na lista
+    - logo após percorremos toda a sua lista de adjacência
+    - para cada vértice alcançavel pelo idVerticeAtual pegamos o id dele e armazenamos em idProxVertice. Como dito na parte das observações é necessário verificar se o grafo é direcionado ou não para saber se o idProxVertice será o destino ou a origem da aresta.
+    - por fim verificamos se o idProxVertice ja foi visitado, caso positivo apenas marcamos a aresta como visitada, caso contrário marcamos a aresta como visitada e chamamos a função recursivamente para o idProxVertice
+
+FORD FULKERSON
+
+Observações:
+    - no enunciado do problema ele pede apenas para utilizar o algoritmo do trabalho 1, portanto a lista de adjacência foi mantida apenas nos vértices, todas as outras estruturas foram vector para poder facilitar o acesso aos dados
+    - na classe Aresta foram adicionados alguns atributos a mais do que no primeiro trabalho e eles aõ importantes para a lógica do código. Os limites e o fluxo atual da aresta são auto explicativos. A flag inversa indica se a aresta é inversa ou não. A flag usável indica se vc pode caminhar/utilizar essa aresta no momento (no proximo topico explico melhor a importancia dela). A flag isOposta indica o id da aresta oposta que é a aresta correspondente que faz o caminho iverso da aresta atual pois como foi visto na aula durante a execução do algoritmo voce vai criar arcos inversos constantemente e essa flag indica essa relação entre as arestas.
+    - para facilitar o acesso aos dados de maneira indexada para não demorar muito tempo, além das arestas indicadas nos dados de entrada, durante a inicialização do grafo, foi criada uma aresta inversa para cada aresta original com a flag usavel == false para indicar que ela não pode ser usada a princípio. Durante a execução do algoritmo, na parte de atualização do grafo de aumento de fluxo a flag usavel dessas arestas inversas passa a ser true caso sua aresta oposta tenha algum fluxo permitindo a utilização dela
+    - todos os vértices possuem um atributo do tipo Rotulo, porém para saber se o vértice está rotulado ou não, os rótulos possuem o atributo resetado que recebe false caso o vértice estiver rotulado e true caso o vértice nao estiver rotulado
+    - diferentemente do primeiro trabalho a lista de adjacência não é somente uma list<int>, dessa vez como as arestas não estão ordenadas nos dados de entrada e também pelo fato da criação das arestas opostas durante a inicialização do grafo uma solução encontrada para poder fazer a análise em ordem crescente de índice foi fazer uma lista do tipo list<pair<int, int>> onde o primeiro inteiro do par indica o vértice alcançavel e o segundo inteiro do par indica a aresta que torna isso possível pois dessa forma podemos ordenar a lista através do primeiro valor do par de cada item
+
+O código do DFS funciona da seguinte maneira:
+    - são declaradas variáveis auxiliares que serão utilizadas no decorrer do algoritmo (o significado delas está noa rquivo FordFulkerson.cpp)
+    - enquanto existir um caminho entre o vértice source e o vértice target iremos executar o algoritmo
+    - procuramos um caminho entre esses dois vértices usando o algoritmo DFS do trabalo 1
+    - caso encontre iremos realizar as operações sobre todos os vértices percorridos pelo DFS
+    - primeiramente pegamos o índice do próximo vértice do caminho e o índice da aresta que liga o vértice atual ao próximo vértice
+    - inserimos a aresta no vetor arestasUsadas, esse vetor vai servir para guiar o algoritmo na hora de atualizar o fluxo no grafo
+    - rotulamos o próximo vértice de acordo com o indicado em aula
+    - caso o algoritmo rotule o vértice target iremos fazer as operações descritas no pseudocodigo
+    - a função construirCaminho apenas realiza o print solicitado no enunciado percorrendo o caminho encontrado pelo DFS
+    - a função aumentaFluxo atualiza o grafo alterando o fluxo nas arestas utilizadas e realizando o controle das flags usavel para poder liberar ou bloquear o uso das aresta dependendo da situação
+    - a função cancelaRotulos altera a flag resetado de todos os vértices precorridos pelo caminho para true indicando que os vértices não estão mais rotulados
+    - no fim do loop os vetores caminho e arestasUsadas são resetados para poderem encontrar e indicar um novo caminho a partir do grafo atualizado
